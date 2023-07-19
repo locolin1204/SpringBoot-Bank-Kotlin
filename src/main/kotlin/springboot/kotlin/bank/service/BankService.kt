@@ -1,11 +1,12 @@
 package springboot.kotlin.bank.service
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import springboot.kotlin.bank.datasource.BankDataSource
 import springboot.kotlin.bank.model.Bank
 
 @Service
-class BankService(private val dataSource: BankDataSource) {
+class BankService(@Qualifier("mock") private val dataSource: BankDataSource) {
 
     fun getBanks(): Collection<Bank> = dataSource.retrieveBanks()
     fun getBank(accountNumber: String): Bank = dataSource.retrieveBank(accountNumber)

@@ -1,10 +1,11 @@
 package springboot.kotlin.bank.datasource.mock
 
+import org.springframework.context.annotation.Primary
 import org.springframework.stereotype.Repository
 import springboot.kotlin.bank.datasource.BankDataSource
 import springboot.kotlin.bank.model.Bank
 
-@Repository
+@Repository("mock")
 class MockBankDataSource : BankDataSource {
     val banks = mutableListOf(
         Bank("0001", 3.0, 1),

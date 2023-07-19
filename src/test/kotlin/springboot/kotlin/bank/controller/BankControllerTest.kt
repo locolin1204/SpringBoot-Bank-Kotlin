@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.web.servlet.*
 import springboot.kotlin.bank.model.Bank
 
@@ -32,7 +33,7 @@ internal class BankControllerTest @Autowired constructor(
                 .andExpect {
                     status { isOk() }
                     content { contentType(MediaType.APPLICATION_JSON) }
-                    jsonPath("$[0].accountNumber") { value("0001") }
+                    jsonPath("$[0].account_number") { value("0001") }
                 }
         }
     }
@@ -44,14 +45,16 @@ internal class BankControllerTest @Autowired constructor(
     inner class GetBank {
         @Test
         fun `should return the bank with given account number`() {
-            val accountNumber = "0001"
+            val accountNumber = "0002"
             mockMvc.get("$baseUrl/$accountNumber")
                 .andDo { print() }
                 .andExpect {
                     status { isOk() }
-                    content { contentType(MediaType.APPLICATION_JSON) }
-                    jsonPath("$.trust") { value(3.0) }
-                    jsonPath("$.transactionFee") { value(1) }
+                    content {
+                        contentType(MediaType.APPLICATION_JSON)
+                        jsonPath("$.trust") { value(4.0) }
+                        jsonPath("$.default_transaction_fee") { value(10) }
+                    }
 
                 }
         }
@@ -117,7 +120,7 @@ internal class BankControllerTest @Autowired constructor(
     inner class PatchExistingBank {
         @Test
         fun `should update an existing bank`() {
-            val updatedBank = Bank("0001", 3.0, 3000)
+            val updatedBank = Bank("0003", 3.0, 3000)
 
             val performPatchRequest = mockMvc.patch(baseUrl) {
                 contentType = MediaType.APPLICATION_JSON
@@ -159,6 +162,7 @@ internal class BankControllerTest @Autowired constructor(
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class DeleteExistingBank {
         @Test
+        @DirtiesContext
         fun `should delete the bank with the given account number`() {
             val accountNumber = "0001"
 
@@ -171,9 +175,7 @@ internal class BankControllerTest @Autowired constructor(
 
         @Test
         fun `should return NOT FOUND if no bank with given account number exists`() {
-
             val invalidAccountNumber = "does_not_exist"
-
             mockMvc.delete("$baseUrl/$invalidAccountNumber")
                 .andDo { print() }
                 .andExpect { status { isNotFound() } }

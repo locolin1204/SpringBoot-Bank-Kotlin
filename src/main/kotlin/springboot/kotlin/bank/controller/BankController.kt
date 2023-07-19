@@ -25,7 +25,6 @@ class BankController (private val service: BankService) {
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleBadRequest(e: IllegalArgumentException): ResponseEntity<String> = ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
 
-
     @GetMapping
     fun getBanks(): Collection<Bank> = service.getBanks()
 
